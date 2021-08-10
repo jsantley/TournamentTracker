@@ -9,6 +9,10 @@ namespace TrackerLibrary
     public class PrizeModel
     {
         /// <summary>
+        /// The unique identifier for the prize.
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
         /// 1,2,3rd place
         /// </summary>
         public int PlaceNumber { get; set; }

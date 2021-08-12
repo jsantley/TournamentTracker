@@ -17,9 +17,32 @@ namespace TrackerLibrary.DataAccess
 {
     public class SqlConnector : IDataConnection
     {
-        ///TODO - Make the CreatePrize method actually save to the database.
+        public PersonModel CreatePerson(PersonModel model)
+        {
+            using (IDbConnection connection =
+                new System.Data.SqlClient.SqlConnection(GlobalConfig.CnnString("Tournaments")))
+            {
+                var p = new DynamicParameters();
+                p.Add("@FirstName", model.FirstName);
+                p.Add("@LastName", model.LastName);
+                p.Add("@EmailAddress", model.EmailAddress);
+                p.Add("@CellphoneNumber", model.CellphoneNumber);
+                p.Add("@id", 0, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                connection.Execute("dbo.spPeople_Insert", p, commandType: CommandType.StoredProcedure);
+
+                model.Id = p.Get<int>("@id");
+
+                return model;
+            }
+        }
+
         /// <summary>
-        /// Saves a new prize to the database
+        /// Saves a new prize to the database.  Uses the connection string that we definied in GlobalConfig.  
+        /// We use Dapper dynamic Parameters to add each of the property values to our instance of Dynamic Parameters.
+        /// We execute our stored procedure that we have created in the SQL server to write all of our information to our database. 
+        /// Our Id is something  that is auto incremented on the SQL backend.  We don't input anything for that variable but we do pull it out so that we have it. 
+        /// We get back our ID and return our model. 
         /// </summary>
         /// <param name="model"></param>
         /// <returns>The prize information, including the unique identifier.</returns>
